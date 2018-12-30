@@ -13,7 +13,6 @@
 
 
 # Environment Setup using Anaconda / Spyder
-Access the report app at http://127.0.0.1:8000/report/
 1. create a virtual environment from conda terminal 
     conda create -n ompvenv python=3.7 anaconda
 2. activate the virtual environment
