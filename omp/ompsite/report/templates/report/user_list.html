@@ -1,0 +1,9 @@
+{% if user_list %}
+    <ul>
+    {% for user in user_list %}
+        <li><a href="/report/user/{{ user.id }}/">{{ user.id }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No Users are added.</p>
+{% endif %}
