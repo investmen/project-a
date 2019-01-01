@@ -78,3 +78,39 @@ def user_detail(request, user_id):
     except User.DoesNotExist:
         raise Http404("User does not exist")
     return render(request, 'report/user_detail.html', {'user': user})
+
+
+def report_list(request):
+	report_list = Report.objects.all()
+	template = loader.get_template('report/report_list.html')
+	context = {
+		  'report_list': report_list,
+	}
+	return HttpResponse(template.render(context,request))
+
+def report_create(request):
+	if request.method == 'POST':
+		form = ReportForm(request.POST)
+		# check whether it's valid:
+		if form.is_valid():
+			# process the data in form.cleaned_data as required
+			# ...
+			# redirect to a new URL:
+			form.save()
+			return HttpResponseRedirect('/report/report/list/')
+
+	# if a GET (or any other method) we'll create a blank form
+	else:
+		form = ReportForm()
+		context = {
+			'form' : form
+		}
+
+	return render(request, 'report/report_create.html', context)
+	
+def report_detail(request, report_id):
+    try:
+        report = Report.objects.get(pk=report_id)
+    except Report.DoesNotExist:
+        raise Http404("Report does not exist")
+    return render(request, 'report/report_detail.html', {'report': report})
