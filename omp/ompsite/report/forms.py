@@ -17,4 +17,4 @@ class UserForm(ModelForm):
 class ReportForm(ModelForm):
 	class Meta:
 		model = Report
-		fields = ['evaluator_id', 'property_address']
+		fields = ['evaluator_id', 'property_address', 'market_value', 'status', 'report']

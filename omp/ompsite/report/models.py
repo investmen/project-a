@@ -10,6 +10,13 @@ class Evaluator(models.Model):
 class Report(models.Model):
 	evaluator_id = models.ForeignKey(Evaluator, on_delete=models.CASCADE)
 	property_address = models.CharField(max_length = 200)
+	market_value = models.DecimalField(max_digits=200, decimal_places=7, null=True, blank=True)
+	report = models.FileField(upload_to='reports/', blank=True, null=True)
+	VALID_STATUSES = (
+		('Completed', 'Completed'),
+		('Requested', 'Requested'),
+	)
+	status = models.CharField(choices=VALID_STATUSES, max_length=50, default='Requested')
 
 class User(models.Model):
 	name = models.CharField(max_length = 50)

@@ -108,9 +108,35 @@ def report_create(request):
 
 	return render(request, 'report/report_create.html', context)
 	
-def report_detail(request, report_id):
-    try:
-        report = Report.objects.get(pk=report_id)
-    except Report.DoesNotExist:
-        raise Http404("Report does not exist")
-    return render(request, 'report/report_detail.html', {'report': report})
+#def report_detail(request, report_id):
+  #  try:
+    #    report = Report.objects.get(pk=report_id)
+#    except Report.DoesNotExist:
+  #      raise Http404("Report does not exist")
+  #  return render(request, 'report/report_detail.html', {'report': report})
+
+def report_update(request, report_id):
+	try:
+		report = Report.objects.get(pk=report_id)
+	except Report.DoesNotExist:
+		raise Http404("Report does not exist")
+	if request.method == 'PUT':
+		form = ReportForm(request.POST, instance=report)
+		# check whether it's valid:
+		if form.is_valid():
+			# process the data in form.cleaned_data as required
+			# ...
+			# redirect to a new URL:
+			form.save()
+			return HttpResponseRedirect('/report/report/list/')
+
+	# if a GET (or any other method) we'll create a blank form
+	else:
+		form = ReportForm(instance=report)
+		context = {
+			'report' : report,
+			'form' : form
+		}
+
+	return render(request, 'report/report_update.html', context)
+	
