@@ -1,17 +1,19 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.template import loader
+from django.core.exceptions import ValidationError
 from .models import Evaluator, Report, User
-from .forms import EvaluatorForm, ReportForm, UserForm
+from .forms import EvaluatorForm, ReportRequestForm, ReportCompleteForm, UserForm
 
 
 
 def index(request):
-	return HttpResponse("Hello..You are at the Report app index.")
+	context = {}
+	return render(request, 'report/index.html', context)
 
 def list_evaluator(request):
 	evaluator_list = Evaluator.objects.all()
-	template = loader.get_template('report/index.html')
+	template = loader.get_template('report/evaluator_list.html')
 	context = {
 		  'evaluator_list': evaluator_list,
 	}
@@ -90,7 +92,7 @@ def report_list(request):
 
 def report_create(request):
 	if request.method == 'POST':
-		form = ReportForm(request.POST)
+		form = ReportRequestForm(request.POST)
 		# check whether it's valid:
 		if form.is_valid():
 			# process the data in form.cleaned_data as required
@@ -98,10 +100,12 @@ def report_create(request):
 			# redirect to a new URL:
 			form.save()
 			return HttpResponseRedirect('/report/report/list/')
+		else:
+			raise ValidationError("Form has an invalid input")
 
 	# if a GET (or any other method) we'll create a blank form
 	else:
-		form = ReportForm()
+		form = ReportRequestForm()
 		context = {
 			'form' : form
 		}
@@ -120,8 +124,8 @@ def report_update(request, report_id):
 		report = Report.objects.get(pk=report_id)
 	except Report.DoesNotExist:
 		raise Http404("Report does not exist")
-	if request.method == 'PUT':
-		form = ReportForm(request.POST, instance=report)
+	if request.method == 'POST':
+		form = ReportCompleteForm(request.POST, request.FILES, instance=report)
 		# check whether it's valid:
 		if form.is_valid():
 			# process the data in form.cleaned_data as required
@@ -129,14 +133,15 @@ def report_update(request, report_id):
 			# redirect to a new URL:
 			form.save()
 			return HttpResponseRedirect('/report/report/list/')
+		else:
+			raise ValidationError("Form has an invalid input")
 
 	# if a GET (or any other method) we'll create a blank form
 	else:
-		form = ReportForm(instance=report)
+		form = ReportCompleteForm(instance=report)
 		context = {
 			'report' : report,
 			'form' : form
 		}
-
-	return render(request, 'report/report_update.html', context)
+		return render(request, 'report/report_update.html', context)
 	

@@ -13,8 +13,12 @@ class UserForm(ModelForm):
 		model = User
 		fields = ['name', 'email', 'telephone', 'address']
 
+class ReportRequestForm(ModelForm):
+	class Meta:
+		model = Report
+		fields = ['evaluator_id', 'property_address', 'status']
 
-class ReportForm(ModelForm):
+class ReportCompleteForm(ModelForm):
 	class Meta:
 		model = Report
 		fields = ['evaluator_id', 'property_address', 'market_value', 'status', 'report']

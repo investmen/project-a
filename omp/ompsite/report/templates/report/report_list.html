@@ -1,7 +1,10 @@
+
+<a href="/report/report/create/">Request New Report</a><br>
+
 {% if report_list %}
     <ul>
     {% for report in report_list %}
-        <li><a href="/report/report/{{ report.id }}/">{{ report.id }}</a></li>
+        <li><a href="/report/report/{{ report.id }}/">Report {{ report.id }}</a></li>
     {% endfor %}
     </ul>
 {% else %}

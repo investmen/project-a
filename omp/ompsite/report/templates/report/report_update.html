@@ -1,4 +1,4 @@
-<form action="/report/report/{{ report.id }}/" method="put" >
+<form action="/report/report/{{ report.id }}/" method="post" enctype="multipart/form-data">
     {% csrf_token %}
     {{ form }}
     <input type="submit" value="Submit" />
