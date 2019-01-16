@@ -15,14 +15,20 @@ class UserForm(ModelForm):
 
 class ReportRequestForm(ModelForm):
 	class Meta:
-		model = Report
-		fields = ['evaluator_id']
+		model = ReportRequest
+		exclude = []
 
 class ReportCompleteForm(ModelForm):
 	class Meta:
 		model = Report
 		fields = ['evaluator_id', 'report']
 
-#class PropertyForm(ModelForm):
-#	class Meta:
-#		model = Property
+class PropertyForm(ModelForm):
+	class Meta:
+		model = Property
+		exclude = []
+
+class ReportPreviewForm(ModelForm):
+	class Meta:
+		model = Report
+		exclude = []

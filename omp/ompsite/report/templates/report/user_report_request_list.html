@@ -1,0 +1,12 @@
+
+<a href="/report/property/search/">Request New Report</a><br>
+
+{% if report_request_list %}
+    <ul>
+    {% for report_request in report_request_list %}
+        <li>{{ report_request }}<a href="/report/report_request/{{ report_request.id }}/">Update</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No Reports available.</p>
+{% endif %}

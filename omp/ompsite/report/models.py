@@ -31,7 +31,7 @@ class Evaluator(models.Model):
 	status = models.CharField(choices=VALID_STATUSES, max_length=200, default='Inactive', null=True)
 
 class Property(models.Model):
-	type = models.CharField(max_length=200)
+	type_ = models.CharField(max_length=200)
 	name = models.CharField(max_length=200)
 	number = models.CharField(max_length=10)
 	floor = models.CharField(max_length=50)
@@ -58,8 +58,8 @@ class User(models.Model):
 class ReportRequest(models.Model):
 	user_id = models.ForeignKey(User, on_delete=models.CASCADE)
 	property_id = models.ForeignKey(Property, on_delete=models.CASCADE)
-	report_id = models.ForeignKey(Report, on_delete=models.CASCADE)
-	payment_reference_number = models.CharField(max_length=200)
+	report_id = models.ForeignKey(Report, on_delete=models.CASCADE, null=True, blank=True)
+	payment_reference_number = models.CharField(max_length=200, null=True, blank=True)
 	VALID_STATUSES = (
 		('Requested', 'Requested'),
 		('Quote Received', 'Quote Received'),

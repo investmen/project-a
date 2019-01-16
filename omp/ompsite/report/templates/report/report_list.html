@@ -1,12 +1,12 @@
 
-<a href="/report/report/create/">Request New Report</a><br>
+<a href="/report/property/{{ property_id }}/report_request/0/">Request New Report</a><br>
 
 {% if report_list %}
     <ul>
     {% for report in report_list %}
-        <li><a href="/report/report/{{ report.id }}/">Report {{ report.id }}</a></li>
+        <li>{{ report }}<a href="/report/property/{{ report.property_id }}/report_request/{{ report.id }}/">Request Report</a></li>
     {% endfor %}
     </ul>
 {% else %}
-    <p>No Reports are added yet.</p>
+    <p>No Reports available.</p>
 {% endif %}
