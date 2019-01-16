@@ -1,24 +1,28 @@
 from django.forms import ModelForm
-from report.models import Evaluator, Report, User
+from report.models import PaymentInfo, Evaluator, Property, Report, User, ReportRequest
 
 
 class EvaluatorForm(ModelForm):
 	class Meta:
 		model = Evaluator
-		fields = ['name', 'email', 'telephone', 'address']
+		exclude = ['name', 'email', 'phone', 'company_address']
 
 
 class UserForm(ModelForm):
 	class Meta:
 		model = User
-		fields = ['name', 'email', 'telephone', 'address']
+		fields = ['name', 'email', 'phone']
 
 class ReportRequestForm(ModelForm):
 	class Meta:
 		model = Report
-		fields = ['evaluator_id', 'property_address', 'status']
+		fields = ['evaluator_id']
 
 class ReportCompleteForm(ModelForm):
 	class Meta:
 		model = Report
-		fields = ['evaluator_id', 'property_address', 'market_value', 'status', 'report']
+		fields = ['evaluator_id', 'report']
+
+#class PropertyForm(ModelForm):
+#	class Meta:
+#		model = Property
