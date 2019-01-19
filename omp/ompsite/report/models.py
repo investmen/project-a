@@ -3,6 +3,9 @@ from django.core import validators
 
 EXTENSIONS = [validators.FileExtensionValidator(allowed_extensions=['pdf'])]
 
+#class SiteAdmin(models.Model):
+#	payment_info_id = models.ForeignKey(PaymentInfo, on_delete=models.CASCADE, null=True)    
+
 class PaymentInfo(models.Model):
 	account_number = models.IntegerField()
 	bank_name = models.CharField(max_length=200)
@@ -21,7 +24,7 @@ class Evaluator(models.Model):
 	cin = models.IntegerField(null=True)
 	supporting_docs = models.FileField(upload_to='supporting_docs/', validators=EXTENSIONS, blank=True, null=True)
 	sample_report = models.FileField(upload_to='sample_reports/', validators=EXTENSIONS, blank=True, null=True)
-	payment_info_id = models.ForeignKey(PaymentInfo, on_delete=models.CASCADE, null=True)
+	payment_info = models.ForeignKey(PaymentInfo, on_delete=models.CASCADE, null=True)
 	VALID_STATUSES = (
 		('Inactive', 'Inactive'),
 		('Registration-in-progress', 'Registration-in-progress'),
@@ -31,7 +34,7 @@ class Evaluator(models.Model):
 	status = models.CharField(choices=VALID_STATUSES, max_length=200, default='Inactive', null=True)
 
 class Property(models.Model):
-	type_ = models.CharField(max_length=200)
+	type = models.CharField(max_length=200)
 	name = models.CharField(max_length=200)
 	number = models.CharField(max_length=10)
 	floor = models.CharField(max_length=50)
@@ -43,8 +46,8 @@ class Property(models.Model):
 	sqft = models.CharField(max_length=200)
 
 class Report(models.Model):
-	evaluator_id = models.ForeignKey(Evaluator, on_delete=models.CASCADE)
-	property_id = models.ForeignKey(Property, on_delete=models.CASCADE, null=True)
+	evaluator = models.ForeignKey(Evaluator, on_delete=models.CASCADE)
+	property = models.ForeignKey(Property, on_delete=models.CASCADE, null=True)
 	#market_value = models.DecimalField(max_digits=200, decimal_places=7, null=True, blank=True)
 	report = models.FileField(upload_to='actual_reports/', validators=EXTENSIONS, blank=True, null=True)
 	
@@ -56,18 +59,20 @@ class User(models.Model):
 	location = models.CharField(max_length = 200, null=True)
 
 class ReportRequest(models.Model):
-	user_id = models.ForeignKey(User, on_delete=models.CASCADE)
-	property_id = models.ForeignKey(Property, on_delete=models.CASCADE)
-	report_id = models.ForeignKey(Report, on_delete=models.CASCADE, null=True, blank=True)
+	user = models.ForeignKey(User, on_delete=models.CASCADE)
+	report = models.ForeignKey(Report, on_delete=models.CASCADE, null=True, blank=True)
 	payment_reference_number = models.CharField(max_length=200, null=True, blank=True)
-	VALID_STATUSES = (
+	ALLOWED_STATES_FOR_USER = (
 		('Requested', 'Requested'),
 		('Quote Received', 'Quote Received'),
 		('Payment Sent', 'Payment Sent'),
+	)
+	ALLOWED_STATES_FOR_EVALUATOR = (
 		('Payment Recieved', 'Payment Recieved'),
 		('Ready to Download Report', 'Ready to Download Report'),
 		('Completed', 'Completed')
 	)
+	VALID_STATUSES = ALLOWED_STATES_FOR_USER + ALLOWED_STATES_FOR_EVALUATOR
 	status = models.CharField(choices=VALID_STATUSES, max_length=200, default='Requested')
 
 

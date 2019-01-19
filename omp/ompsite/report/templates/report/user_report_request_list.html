@@ -1,10 +1,14 @@
-
 <a href="/report/property/search/">Request New Report</a><br>
-
-{% if report_request_list %}
+<br/>
+User Requests<br/>
+{% if request_list %}
     <ul>
-    {% for report_request in report_request_list %}
-        <li>{{ report_request }}<a href="/report/report_request/{{ report_request.id }}/">Update</a></li>
+    {% for request in request_list %}
+        <li>{{ request }}<a href="/report/report_request/{{ request.id }}/0/">Update</a>
+        	{% if request.status == "Ready to Download Report" %}
+        	    <a href="/report/report/{{ request.report.id }}/">Download</a>
+        	{% endif %}
+        </li>
     {% endfor %}
     </ul>
 {% else %}
