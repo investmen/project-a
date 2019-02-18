@@ -151,7 +151,13 @@ def report_update(request, report_id):
             # process the data in form.cleaned_data as required
             # ...
             # redirect to a new URL:
+            #form.cleaned_data["report_json"] = {}
+            for (field, value) in form.extra_fields():
+                form.cleaned_data["report_json"][field] = value
+            #form.clear_extra_fields()
             form.save()
+            #model = Report(**form.cleaned_data)
+            #model.save()
             return HttpResponseRedirect('/report/report/list/')
         else:
             raise ValidationError("Form has an invalid input")
@@ -208,11 +214,6 @@ def property_report_create(request, property_id):
             # ...
             # redirect to a new URL:
             form.save()
-            #report_fields_and_values = {}
-            #for (field, value) in form.report_fields_and_values():
-            #    report_fields_and_values[field] = value
-            #obj = model(**form.cleaned_data)
-            #obj.save()
             return HttpResponseRedirect('/report/evaluator/%s/report_list/' % user_id)
         else:
             raise ValidationError("Form has an invalid input")

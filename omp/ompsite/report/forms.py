@@ -44,7 +44,8 @@ class ReportUpdateForm(ModelForm):
 	#proprty = forms.ModelChoiceField(queryset=Property.objects.all())
 	class Meta:
 		model = Report 
-		exclude = ["report_json"]
+		#exclude = ["report_json"]
+		exclude = []
 
 	def __init__(self, *args, **kwargs):
 		report = kwargs.pop('extra')
@@ -53,6 +54,15 @@ class ReportUpdateForm(ModelForm):
 		for i, k in enumerate(report_json.keys()):
 			self.fields['field_%s' % i] = JSONField(label=k, initial=report_json[k])
 
+	def extra_fields(self):
+		for name, value in self.cleaned_data.items():
+			if name.startswith('field_'):
+				yield (self.fields[name].label, value)
+
+	def clear_extra_fields(self):
+		for name in list(self.cleaned_data):
+			if name.startswith('field_'):
+				del self.cleaned_data[name]
 
 class ReportRequestDownloadableForm(ModelForm):
 	class Meta:
