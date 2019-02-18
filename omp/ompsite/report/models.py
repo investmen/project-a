@@ -1,7 +1,8 @@
 from django.db import models
+from django.contrib.postgres.fields import JSONField
 from django.core import validators
 
-EXTENSIONS = [validators.FileExtensionValidator(allowed_extensions=['pdf'])]
+EXTENSIONS = [validators.FileExtensionValidator(allowed_extensions=['pdf','jpg'])]
 
 #class SiteAdmin(models.Model):
 #	payment_info_id = models.ForeignKey(PaymentInfo, on_delete=models.CASCADE, null=True)    
@@ -23,7 +24,6 @@ class Evaluator(models.Model):
 	pan = models.IntegerField(null=True)
 	cin = models.IntegerField(null=True)
 	supporting_docs = models.FileField(upload_to='supporting_docs/', validators=EXTENSIONS, blank=True, null=True)
-	sample_report = models.FileField(upload_to='sample_reports/', validators=EXTENSIONS, blank=True, null=True)
 	payment_info = models.ForeignKey(PaymentInfo, on_delete=models.CASCADE, null=True)
 	VALID_STATUSES = (
 		('Inactive', 'Inactive'),
@@ -48,8 +48,10 @@ class Property(models.Model):
 class Report(models.Model):
 	evaluator = models.ForeignKey(Evaluator, on_delete=models.CASCADE)
 	property = models.ForeignKey(Property, on_delete=models.CASCADE, null=True)
-	#market_value = models.DecimalField(max_digits=200, decimal_places=7, null=True, blank=True)
-	report = models.FileField(upload_to='actual_reports/', validators=EXTENSIONS, blank=True, null=True)
+	report_json = JSONField(null=True, blank=True)
+	report_field_extensions_json =JSONField(null=True, blank=True)
+	report_annexure = models.FileField(upload_to='report_annexure/', validators=EXTENSIONS, blank=True, null=True)
+
 	
 class User(models.Model):
 	name = models.CharField(max_length = 200)

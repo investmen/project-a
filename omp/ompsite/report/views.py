@@ -3,7 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.template import loader
 from django.core.exceptions import ValidationError
 from .models import Evaluator, Property, Report, User, ReportRequest
-from .forms import PaymentInfoForm, EvaluatorForm, PropertyForm, ReportForm, ReportRequestForm, ReportCompleteForm, UserForm
+from .forms import PaymentInfoForm, EvaluatorForm, PropertyForm, ReportForm, ReportUpdateForm, ReportRequestForm, ReportCompleteForm, UserForm
 
 
 
@@ -145,7 +145,7 @@ def report_update(request, report_id):
     except Report.DoesNotExist:
         raise Http404("Report does not exist")
     if request.method == 'POST':
-        form = ReportForm(request.POST, request.FILES, instance=report)
+        form = ReportUpdateForm(request.POST, instance=report, extra=report)
         # check whether it's valid:
         if form.is_valid():
             # process the data in form.cleaned_data as required
@@ -158,7 +158,7 @@ def report_update(request, report_id):
 
     # if a GET (or any other method) we'll create a blank form
     else:
-        form = ReportForm(instance=report)
+        form = ReportUpdateForm(instance=report, extra=report)
         context = {
             'report' : report,
             'form' : form
@@ -201,13 +201,18 @@ def property_report_create(request, property_id):
     #user_id = request.user.id
     user_id = 1
     if request.method == 'POST':
-        form = ReportForm(request.POST, request.FILES)
+        form = ReportForm(request.POST)
         # check whether it's valid:
         if form.is_valid():
             # process the data in form.cleaned_data as required
             # ...
             # redirect to a new URL:
             form.save()
+            #report_fields_and_values = {}
+            #for (field, value) in form.report_fields_and_values():
+            #    report_fields_and_values[field] = value
+            #obj = model(**form.cleaned_data)
+            #obj.save()
             return HttpResponseRedirect('/report/evaluator/%s/report_list/' % user_id)
         else:
             raise ValidationError("Form has an invalid input")
