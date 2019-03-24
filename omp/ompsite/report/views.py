@@ -7,8 +7,12 @@ from django.core.exceptions import ValidationError
 from .models import Evaluator, Property, Report, User, ReportRequest
 from .forms import PaymentInfoForm, EvaluatorForm, PropertyForm, ReportForm, ReportUpdateForm, ReportRequestForm, ReportCompleteForm, UserForm
 from reportlab.pdfgen import canvas
+from reportlab.platypus import SimpleDocTemplate, Paragraph, PageBreak
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.units import mm, inch
 
-
+PAGESIZE = (140 * mm, 216 * mm)
+BASE_MARGIN = 5 * mm
 
 def index(request):
     context = {}
@@ -195,22 +199,89 @@ def report_download_not_working(request, report_id):
     # present the option to save the file.
     return FileResponse(buffer, as_attachment=True, filename='hello.pdf')
 
+def get_heading_style():
+    sample_style_sheet = getSampleStyleSheet()
+    heading_style = sample_style_sheet['Heading1']
+    heading_style.fontSize = 18
+    return heading_style
+
+def get_body_style():
+    sample_style_sheet = getSampleStyleSheet()
+    body_style = sample_style_sheet['BodyText']
+    body_style.fontSize = 10
+    return body_style
+
+def traverse_dict(value_dict, flowables, heading_style, body_style):
+    for k, v in value_dict.items():
+        if isinstance(v, dict):
+            flowables.append(Paragraph("%s:" % k, heading_style))
+            traverse_dict(v, flowables, heading_style, body_style)
+        else:
+            flowables.append(Paragraph("%s: %s" % (k, v), body_style))
+
+def build_pdf(report_json):
+    pdf_buffer = BytesIO()
+    my_doc = SimpleDocTemplate(
+        pdf_buffer,
+        pagesize=PAGESIZE,
+        topMargin=BASE_MARGIN,
+        leftMargin=BASE_MARGIN,
+        rightMargin=BASE_MARGIN,
+        bottomMargin=BASE_MARGIN
+    )
+    body_style = get_body_style()
+    heading_style = get_heading_style()
+    flowables = []
+    traverse_dict(report_json, flowables, heading_style, body_style)
+    #flowables = [
+    #    Paragraph("First paragraph", heading_style),
+    #    Paragraph("Second paragraph", body_style)
+    #]
+    my_doc.build(
+        flowables,
+        #onFirstPage=self.add_page_number,
+        #onLaterPages=self.add_page_number,
+    )
+    pdf_value = pdf_buffer.getvalue()
+    pdf_buffer.close()
+    return pdf_value
+
+def update_dict(nested_json, root, temp_dict):
+  try:
+    nested_json[root].update(temp_dict)
+  except KeyError:
+    nested_json[root] = temp_dict
+
+
+def convert_flat_to_nested_json(report_json):
+    nested_json = {}
+    for k, v in report_json.items():
+      path_elem = k.split(":")
+      root = path_elem.pop(0)
+      if len(path_elem) > 1:
+        leaf_dict = {path_elem.pop(): v}
+        temp_dict = leaf_dict
+        path_elem.reverse()
+        for i in path_elem:
+          temp_dict = {i: temp_dict}
+        update_dict(nested_json, root, temp_dict)
+      elif len(path_elem) == 1:
+        temp_dict = {path_elem.pop(): v}
+        update_dict(nested_json, root, temp_dict)
+      else:
+        nested_json[root] = v
+    print(nested_json)
+    return nested_json
+
 def report_download(request, report_id):
+    try:
+        report = Report.objects.get(pk=report_id)
+    except Report.DoesNotExist:
+        raise Http404("Report does not exist")
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = 'inline; filename="report-%s.pdf"' % report_id
 
-    buffer = BytesIO()
-    p = canvas.Canvas(buffer)
-
-    # Start writing the PDF here
-    p.drawString(100, 100, 'Hello world.')
-    # End writing
-
-    p.showPage()
-    p.save()
-
-    pdf = buffer.getvalue()
-    buffer.close()
+    pdf = build_pdf(convert_flat_to_nested_json(report.report_json))
     response.write(pdf)
 
     return response
