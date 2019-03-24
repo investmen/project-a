@@ -152,8 +152,15 @@ def report_update(request, report_id):
             # ...
             # redirect to a new URL:
             #form.cleaned_data["report_json"] = {}
-            for (field, value) in form.extra_fields():
-                form.cleaned_data["report_json"][field] = value
+            i = 0
+            for (field, value) in form.extra_fields('field_'):
+                # the variable field contains the section titles like 'Instruction', 'Fair Market Value Analysis'...  
+                d = {}
+                # now lets iterate through the fields within a section
+                for (field, value) in form.extra_fields('field_%s_' % i):
+                    d[field] = value
+                form.cleaned_data["report_json"][field] = d
+
             #form.clear_extra_fields()
             form.save()
             #model = Report(**form.cleaned_data)
