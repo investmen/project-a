@@ -1,9 +1,12 @@
+from io import BytesIO
+
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.template import loader
 from django.core.exceptions import ValidationError
 from .models import Evaluator, Property, Report, User, ReportRequest
 from .forms import PaymentInfoForm, EvaluatorForm, PropertyForm, ReportForm, ReportUpdateForm, ReportRequestForm, ReportCompleteForm, UserForm
+from reportlab.pdfgen import canvas
 
 
 
@@ -170,7 +173,48 @@ def report_update(request, report_id):
             'form' : form
         }
         return render(request, 'report/report_update.html', context)
- 
+
+from django.http import FileResponse
+#FIXME: https://docs.djangoproject.com/en/2.1/howto/outputting-pdf/
+def report_download_not_working(request, report_id):
+    # Create a file-like buffer to receive PDF data.
+    buffer = io.BytesIO()
+
+    # Create the PDF object, using the buffer as its "file."
+    p = canvas.Canvas(buffer)
+
+    # Draw things on the PDF. Here's where the PDF generation happens.
+    # See the ReportLab documentation for the full list of functionality.
+    p.drawString(100, 100, "Hello world.")
+
+    # Close the PDF object cleanly, and we're done.
+    p.showPage()
+    p.save()
+
+    # FileResponse sets the Content-Disposition header so that browsers
+    # present the option to save the file.
+    return FileResponse(buffer, as_attachment=True, filename='hello.pdf')
+
+def report_download(request, report_id):
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'inline; filename="report-%s.pdf"' % report_id
+
+    buffer = BytesIO()
+    p = canvas.Canvas(buffer)
+
+    # Start writing the PDF here
+    p.drawString(100, 100, 'Hello world.')
+    # End writing
+
+    p.showPage()
+    p.save()
+
+    pdf = buffer.getvalue()
+    buffer.close()
+    response.write(pdf)
+
+    return response
+
 def get_or_create_property(request):
     form = PropertyForm(request.POST)
     if form.is_valid():

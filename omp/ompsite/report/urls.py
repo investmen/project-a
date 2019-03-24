@@ -15,6 +15,7 @@ urlpatterns = [
     path('user/create/', views.user_create, name='user_create'),
     path('user/<int:user_id>/report_request_list/', views.user_report_request_list, name = 'user_report_request_list'),
     path('report/<int:report_id>/', views.report_update, name = 'report_update'),
+    path('report/<int:report_id>/download/', views.report_download, name = 'report_download'),
     path('report/list/', views.report_list, name='report_list'),
     path('report/create/', views.report_create, name='report_create'),
     path('property/evaluator_search/', views.property_evaluator_search, name='property_evaluator_search'),

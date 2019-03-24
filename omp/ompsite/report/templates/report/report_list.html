@@ -2,7 +2,7 @@
 {% if report_list %}
     <ul>
     {% for report in report_list %}
-        <li>{{ report }}<a href="/report/report/{{ report.id }}/">Update</a></li>
+        <li>{{ report }}<a href="/report/report/{{ report.id }}/">Update</a><a href="/report/report/{{ report.id }}/download/">Download</a></li>
     {% endfor %}
     </ul>
 {% else %}
