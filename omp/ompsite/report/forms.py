@@ -1,4 +1,4 @@
-from django.forms import ModelForm, CharField
+from django.forms import ModelForm
 from django.contrib.postgres.forms import JSONField
 from report.models import PaymentInfo, Evaluator, Property, Report, User, ReportRequest
 
@@ -52,13 +52,9 @@ class ReportUpdateForm(ModelForm):
 		super(ReportUpdateForm, self).__init__(*args, **kwargs)
 		report_json = report.report_json
 		for i, k in enumerate(report_json.keys()):
-			section_json = report_json[k]
-			self.fields['field_%s' % i] = JSONField(label=k, initial=section_json)
-			for i2, k2 in enumerate(section_json.keys()):
-			    self.fields['field_%s_%s' % (i, i2)] = CharField(label=k2, initial=section_json[k2], max_length=200, required=False)
+			self.fields['field_%s' % i] = JSONField(label=k, initial=report_json[k])
 
-
-	def extra_fields(self, prefix):
+	def extra_fields(self):
 		for name, value in self.cleaned_data.items():
 			if name.startswith('field_'):
 				yield (self.fields[name].label, value)
