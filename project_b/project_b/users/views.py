@@ -41,6 +41,48 @@ class UserUpdateView(LoginRequiredMixin, UpdateView):
 user_update_view = UserUpdateView.as_view()
 
 
+class CUserUpdateView(LoginRequiredMixin, UpdateView):
+
+    model = User
+    fields = ["category"]
+
+    def get_success_url(self):
+        return reverse("users:detail", kwargs={"username": self.request.user.username})
+
+    def get_object(self):
+        return User.objects.get(username=self.request.user.username)
+
+
+cuser_update_view = CUserUpdateView.as_view()
+
+class EUserUpdateView(LoginRequiredMixin, UpdateView):
+
+    model = User
+    fields = ["name", "phone", "company_name", "company_address", "aadhaar_number", "pan", "cin"]
+
+    def get_success_url(self):
+        return reverse("users:detail", kwargs={"username": self.request.user.username})
+
+    def get_object(self):
+        return User.objects.get(username=self.request.user.username)
+
+
+euser_update_view = EUserUpdateView.as_view()
+
+class BUserUpdateView(LoginRequiredMixin, UpdateView):
+
+    model = User
+    fields = ["name", "phone", "company_name", "location"]
+
+    def get_success_url(self):
+        return reverse("users:detail", kwargs={"username": self.request.user.username})
+
+    def get_object(self):
+        return User.objects.get(username=self.request.user.username)
+
+
+buser_update_view = BUserUpdateView.as_view()
+
 class UserRedirectView(LoginRequiredMixin, RedirectView):
 
     permanent = False
