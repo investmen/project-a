@@ -1,0 +1,12 @@
+
+<a href="/report/property/evaluator_search/">Create New Report</a><br>
+
+{% if report_list %}
+    <ul>
+    {% for report in report_list %}
+        <li>{{ report }}<a href="/report/report/{{ report.id }}/">Update</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No Reports available.</p>
+{% endif %}

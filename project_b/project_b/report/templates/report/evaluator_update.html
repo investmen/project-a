@@ -1,0 +1,6 @@
+Evaluator Details
+<form action="/report/evaluator/{{ evaluator.id }}/" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Submit"/>
+</form>

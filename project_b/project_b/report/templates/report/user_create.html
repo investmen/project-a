@@ -1,0 +1,7 @@
+Register User(Bank)
+<br></br>
+<form action="/report/user/create/" method="post" >
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Submit" />
+</form>

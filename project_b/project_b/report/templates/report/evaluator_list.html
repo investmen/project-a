@@ -1,0 +1,9 @@
+{% if evaluator_list %}
+    <ul>
+    {% for evaluator in evaluator_list %}
+        <li><a href="/report/evaluator/{{ evaluator.id }}/">{{ evaluator.id }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No Evaluators are added.</p>
+{% endif %}
